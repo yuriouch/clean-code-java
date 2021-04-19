@@ -1,7 +1,6 @@
 package com.epam.engx.cleancode.dry;
 
 import com.epam.engx.cleancode.dry.thirdpartyjar.Account;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -39,7 +38,7 @@ public class AccountDetails implements Account {
     }
 
     public int getAge() {
-        return age;       // should depend on current time
+        return new InterestCalculator().durationBetweenDatesInYears(birth, new Date());       // should depend on current time
     }
 
     public void setAge(int age) {

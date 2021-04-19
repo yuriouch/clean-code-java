@@ -10,21 +10,18 @@ import java.util.GregorianCalendar;
 public class InterestCalculator implements Profitable {
 
     private static final int AGE = 60;
-    private static final BigDecimal INTEREST_PERCENT = BigDecimal.valueOf(4.5d);
-    private static final BigDecimal SENIOR_PERCENT = BigDecimal.valueOf(5.5d);
+    private static final double INTEREST_PERCENT = 4.5d;
+    private static final double SENIOR_PERCENT = 5.5d;
     private static final int BONUS_AGE = 13;
     private static final int LEAP_YEAR_SHIFT = 1;
 
 
     public BigDecimal calculateInterest(AccountDetails accountDetails) {
-        if (!isAccountStartedAfterBonusAge(accountDetails)) {
-            return BigDecimal.ZERO;
-        }
-
-        if (accountDetails.getAge() >= AGE) {
-            return interest(accountDetails, SENIOR_PERCENT);
+        if (isAccountStartedAfterBonusAge(accountDetails)) {
+            double interestRate = chooseInterestRate(accountDetails);
+            return calculateSimpleInterest(accountDetails, interestRate);
         } else {
-            return interest(accountDetails, INTEREST_PERCENT);
+            return BigDecimal.ZERO;
         }
     }
 
@@ -34,28 +31,33 @@ public class InterestCalculator implements Profitable {
                 accountDetails.getStartDate()) > BONUS_AGE;
     }
 
-    private int durationBetweenDatesInYears(Date from, Date to) {
+     public int durationBetweenDatesInYears(Date startDate, Date endDate) {
         Calendar startCalendar = new GregorianCalendar();
-        startCalendar.setTime(from);
+        startCalendar.setTime(startDate);
         Calendar endCalendar = new GregorianCalendar();
-        endCalendar.setTime(to);
+        endCalendar.setTime(endDate);
 
-        int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+        int durationInYears = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
         if (endCalendar.get(Calendar.DAY_OF_YEAR) + LEAP_YEAR_SHIFT
                 < startCalendar.get(Calendar.DAY_OF_YEAR)) {
-            return diffYear - 1;
+            return durationInYears - 1;
         }
-        return diffYear;
+        return durationInYears;
     }
 
-    private BigDecimal interest(AccountDetails accountDetails, BigDecimal annualInterestRate) {
-        double duration = durationBetweenDatesInYears(accountDetails.getStartDate(), new Date());
+    private double chooseInterestRate(AccountDetails accountDetails) {
+        if (accountDetails.getAge() >= AGE) {
+            return SENIOR_PERCENT;
+        } else {
+            return INTEREST_PERCENT;
+        }
+    }
 
+    private BigDecimal calculateSimpleInterest(AccountDetails accountDetails, double interestRate) {
+        double durationInYears = durationBetweenDatesInYears(accountDetails.getStartDate(), new Date());
+        double accountBalance = accountDetails.getBalance().doubleValue();
         //interest = (PrincipalAmount * DurationInYears * AnnualInterestRate) / 100
-        return accountDetails
-                .getBalance()
-                .multiply(BigDecimal.valueOf(duration))
-                .multiply(annualInterestRate)
-                .divide(BigDecimal.valueOf(100));
+        double simpleInterest = accountBalance * durationInYears * interestRate / 100;
+        return BigDecimal.valueOf(simpleInterest);
     }
 }
