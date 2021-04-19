@@ -2,26 +2,21 @@ package com.epam.engx.cleancode.functions.task2;
 
 import com.epam.engx.cleancode.functions.task2.thirdpartyjar.Product;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class Order {
 
     private List<Product> products;
 
-    public Double getPriceOfAvailableProducts() {
-        double orderPrice = 0.0;
-        Iterator<Product> iterator = products.iterator();
-        while (iterator.hasNext()) {
-            Product p = iterator.next();
-            if (!p.isAvailable())
-                iterator.remove();
+    public double getPriceOfAvailableProducts() {
+        double totalPrice = 0.0;
+        for (Product product : products) {
+            if (product.isAvailable()) {
+                totalPrice += product.getProductPrice();
+            }
         }
-        for (Product p : products)
-            orderPrice += p.getProductPrice();
-        return orderPrice;
+        return totalPrice;
     }
-
 
     public void setProducts(List<Product> products) {
         this.products = products;
