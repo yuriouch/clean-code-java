@@ -6,7 +6,6 @@ import java.util.Date;
 
 public class AccountDetails implements Account {
     private Date birth;
-    private int age;
     private BigDecimal balance;
     private Date startDate;
 
@@ -38,11 +37,6 @@ public class AccountDetails implements Account {
     }
 
     public int getAge() {
-        return new InterestCalculator().durationBetweenDatesInYears(birth, new Date());       // should depend on current time
+        return new InterestCalculator().durationBetweenDatesInYears(birth, new Date());
     }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
 }

@@ -11,36 +11,42 @@ public class RegisterAccountAction {
 
     private PasswordChecker passwordChecker;
     private AccountManager accountManager;
+    private final int MIN_NAME_LENGTH = 5;
+    private final int MIN_PASSWORD_LENGTH = 8;
 
     public void register(Account account) {
         validateAccountName(account.getName());
-        validateAccountPassword(account.getPassword());
-        account.setCreatedDate(new Date());
-        addAddressesToAccount(account);
+        checkPasswordLength(account.getPassword());
+        checkPasswordStatus(account.getPassword());
+        prepareAccountToRegister(account);
         accountManager.createNewAccount(account);
     }
 
     private void validateAccountName(String name) {
-        if (name.length() <= 5){
+        if (name.length() <= MIN_NAME_LENGTH){
             throw new WrongAccountNameException();
         }
     }
 
-    private void validateAccountPassword(String password) {
-        if (password.length() <= 8) {
+    private void checkPasswordLength(String password) {
+        if (password.length() <= MIN_PASSWORD_LENGTH) {
             throw new TooShortPasswordException();
         }
+    }
+
+    private void checkPasswordStatus(String password) {
         if (passwordChecker.validate(password) != OK) {
             throw new WrongPasswordException();
         }
     }
 
-    private void addAddressesToAccount(Account account) {
+    private void prepareAccountToRegister(Account account) {
         List<Address> addresses = new ArrayList<Address>();
         addresses.add(account.getHomeAddress());
         addresses.add(account.getWorkAddress());
         addresses.add(account.getAdditionalAddress());
         account.setAddresses(addresses);
+        account.setCreatedDate(new Date());
     }
 
     public void setAccountManager(AccountManager accountManager) {

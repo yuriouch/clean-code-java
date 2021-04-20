@@ -11,9 +11,14 @@ public class Order {
     public double getPriceOfAvailableProducts() {
         double totalPrice = 0.0;
         for (Product product : products) {
-            if (product.isAvailable()) {
-                totalPrice += product.getProductPrice();
-            }
+            totalPrice = getTotalPrice(totalPrice, product);
+        }
+        return totalPrice;
+    }
+
+    private double getTotalPrice(double totalPrice, Product product) {
+        if (product.isAvailable()) {
+            totalPrice += product.getProductPrice();
         }
         return totalPrice;
     }
